@@ -23,7 +23,13 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
+.env
 .env*.local
+.env.development
+.env.test
+
+# ⚠️ .env.production is tracked for deployment reference
+# It contains template values, not secrets
 
 # vercel
 .vercel
@@ -31,3 +37,14 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Backend
+/crm-backend/.env
+/crm-backend/vendor
+/crm-backend/node_modules
+/crm-backend/public/storage
+/crm-backend/public/hot
+/crm-backend/public/build
+/crm-backend/storage/*.key
+/crm-backend/.env.backup
+/crm-backend/.phpunit.result.cache
