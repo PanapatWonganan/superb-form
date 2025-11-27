@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { calculateSize, SizeRecommendation } from '@/utils/sizeCalculator'
+import { apiRequest, API_ENDPOINTS } from '@/lib/api'
 import ResultPage from './ResultPage'
 
 type Question = {
@@ -287,7 +288,7 @@ export default function SurveyForm() {
     }
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const finalAnswers = { ...answers, [questions[currentQuestion].id]: currentAnswer }
     console.log('Survey submitted:', finalAnswers)
 
@@ -300,6 +301,43 @@ export default function SurveyForm() {
 
     const recommendation = calculateSize(bust, waist, hips, fitPreference)
     setSizeRecommendation(recommendation)
+
+    // Send data to backend
+    try {
+      const result = await apiRequest(API_ENDPOINTS.LEADS, {
+        method: 'POST',
+        body: JSON.stringify({
+          name: finalAnswers[1] || '',
+          email: finalAnswers[2] || '',
+          phone: '0000000000',
+          company: '',
+          position: '',
+          source: 'survey_form',
+          form_data: {
+            height: finalAnswers[3],
+            weight: finalAnswers[4],
+            bust: finalAnswers[5],
+            waist: finalAnswers[6],
+            hips: finalAnswers[7],
+            fit_preference: finalAnswers[8],
+            activities: finalAnswers[9],
+            colors: finalAnswers[10],
+            budget: finalAnswers[11],
+            additional_notes: finalAnswers[12],
+            size_recommendation: recommendation,
+          },
+        }),
+      })
+
+      if (result.success) {
+        console.log('Lead created successfully:', result.data)
+      } else {
+        console.error('Failed to create lead:', result.message || result.error)
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error)
+    }
+
     setIsSubmitted(true)
   }
 
